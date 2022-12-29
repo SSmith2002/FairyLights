@@ -1,6 +1,7 @@
 import os
 import socket
 from time import *
+import _thread
 
 class WebServer:
     def __init__(self,methods,port=80,folder="",defaultPage="index.html"):
@@ -25,7 +26,7 @@ class WebServer:
                 connSocket,sourceAddr = servSocket.accept()
                 if(connSocket):
                     print("%s connected" %(sourceAddr[0]))
-                    self.handleRequest(connSocket)
+                    _thread.start_new_thread(self.handleRequest,(connSocket))
 
         except Exception as e:
             servSocket.close()

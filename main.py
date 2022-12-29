@@ -1,9 +1,12 @@
 import network
-import socket
 import time
 from webServer import WebServer
+from neopixel import Neopixel
 
-
+leds = Neopixel(50,0,0,"GRB")
+color = (255,255,0)
+leds.fill(color,50)
+leds.show()
 
 ssid = "TALKTALK0573C2_EXT"
 password = "CNNHYFAW"
