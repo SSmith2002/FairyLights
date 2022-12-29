@@ -1,7 +1,6 @@
 import os
 import socket
 from time import *
-import threading
 
 class WebServer:
     def __init__(self,methods,port=80,folder="",defaultPage="index.html"):
@@ -26,8 +25,7 @@ class WebServer:
                 connSocket,sourceAddr = servSocket.accept()
                 if(connSocket):
                     print("%s connected" %(sourceAddr[0]))
-                    newThread = threading.Thread(target=self.handleRequest,args=(connSocket,))
-                    newThread.start()
+                    self.handleRequest(connSocket)
 
         except Exception as e:
             servSocket.close()
@@ -35,10 +33,12 @@ class WebServer:
 
     def handleRequest(self,client):
         message = client.recv(1024)
-        request = ""
+        request = message.decode()
         while(len(message) == 1024):
             message = client.recv(1024)
             request += message.decode()
+        
+        print(request)
     
         if(request):
             request = request.split('\n')[0]
