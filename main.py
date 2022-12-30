@@ -7,6 +7,8 @@ import rp2
 import random
 
 async def gradient(colour1,colour2):
+    global currPixels
+
     colour1,colour2 = hexCol2RGBCol(colour1),hexCol2RGBCol(colour2)
     r = colour1[0]
     g = colour1[1]
@@ -25,37 +27,49 @@ async def gradient(colour1,colour2):
         g += gD
         b += bD
 
+        currPixels[i] = colour
     leds.show()
 
 async def fillBlock(colour):
+    global currPixels
+    
     colour = hexCol2RGBCol(colour)
     for i in range(50):
         leds.set_pixel(i,colour)
-
+        currPixels[i] = colour
     leds.show()
 
 async def fillPattern(colour):
+    global currPixels
+    
     colour = hexCol2RGBCol(colour)
     for i in range(50):
         newCol = (random.randint(0,colour[0]),random.randint(0,colour[1]),random.randint(0,colour[2]))
         leds.set_pixel(i,newCol)
+        currPixels[i] = newCol
     leds.show()
 
 async def fillPatternCol(colour):
+    global currPixels
+    
     colour = hexCol2RGBCol(colour)
     for i in range(50):
         ratio = random.randint(0,255) / 255
         newCol = (round(colour[0]*ratio),round(colour[1]*ratio),round(colour[2]*ratio))
         leds.set_pixel(i,newCol)
+        currPixels[i] = newCol
     leds.show()
 
 def showIP(ip):
+    global currPixels
+    
     ip = ip.split(".")
     ip = int(ip[-1])
 
     colour = (255,255,0)
     for i in range(ip):
         leds.set_pixel(i,colour)
+        currPixels[i] = colour
         leds.show()
         time.sleep(1)
 
@@ -72,7 +86,7 @@ def hexCol2RGBCol(hex):
 rp2.PIO(0).remove_program()
 
 global currPixels
-currPixels = [[0] * 50]
+currPixels = [[(0,0,0)] * 50]
 
 methods = {"fillBlock":(fillBlock,["colour"]),
             "fillPattern":(fillPattern,["colour"]),
