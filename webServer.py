@@ -26,7 +26,6 @@ class WebServer:
                 await uasyncio.sleep_ms(100)
                 try:
                     connSocket,sourceAddr = servSocket.accept()
-                    print(connSocket)
                     if(connSocket):
                         print("%s connected" %(sourceAddr[0]))
                         uasyncio.create_task(self.handleRequest(connSocket))

@@ -8,6 +8,11 @@ import random
 
 async def gradient(colour1,colour2):
     global currPixels
+    global active
+
+    active += 1
+    while(active > 1):
+        await uasyncio.sleep_ms(animationSpeed)
 
     colour1,colour2 = hexCol2RGBCol(colour1),hexCol2RGBCol(colour2)
     r = colour1[0]
@@ -28,14 +33,23 @@ async def gradient(colour1,colour2):
         currPixels[i] = colour
     leds.show()
 
+    active -= 1
+
 async def fillBlock(colour):
     global currPixels
+    global active
+
+    active += 1
+    while(active > 1):
+        await uasyncio.sleep_ms(animationSpeed)
     
     colour = hexCol2RGBCol(colour)
     for i in range(50):
         leds.set_pixel(i,colour)
         currPixels[i] = colour
     leds.show()
+
+    active -= 1
 
 async def fillPattern(colour):
     global currPixels

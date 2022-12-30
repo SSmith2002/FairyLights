@@ -38,7 +38,7 @@ async function formatURL(methodName,params = {}){
     }
 
     url = url.substring(0,url.length-1)
-    console.log("test")
+
     return await fetch(url)
 }
 
