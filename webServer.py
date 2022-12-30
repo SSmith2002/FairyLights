@@ -14,7 +14,7 @@ class WebServer:
         print('Web Server starting on port: %d...' % (self.port))
         
         servSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        servSocket.setblocking(0)
+
         try:
             servSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -23,7 +23,7 @@ class WebServer:
             servSocket.listen(1)
 
             while True:
-                await uasyncio.sleep_ms(10)
+                await uasyncio.sleep_ms(100)
                 connSocket,sourceAddr = servSocket.accept()
                 print(connSocket)
                 if(connSocket):

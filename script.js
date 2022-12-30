@@ -1,6 +1,10 @@
 function fill(){
-    let colour = document.getElementById("colorpicker").value
-    console.log(colour)
+    let colour = document.getElementById("colorpicker").value.substring(1)
+
+    params = {"colour":colour}
+    result = formatURL("fill",params)
+
+    return "Done"
 }
 
 async function formatURL(methodName,params = {}){
@@ -11,5 +15,5 @@ async function formatURL(methodName,params = {}){
 
     url = url.substring(0,url.length-1)
 
-    return await fetch(url,options)
+    return await fetch(url)
 }
