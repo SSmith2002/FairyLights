@@ -4,15 +4,49 @@ from webServer import WebServer
 from neopixel import Neopixel
 import uasyncio
 import rp2
+import random
 
 async def gradient(colour1,colour2):
     colour1,colour2 = hexCol2RGBCol(colour1),hexCol2RGBCol(colour2)
-    leds.set_pixel_line_gradient(0,49,colour1,colour2)
+    r = colour1[0]
+    g = colour1[1]
+    b = colour1[2]
+    rD = round((colour1[0] - colour2[0]) / 50)
+    gD = round((colour1[1] - colour2[1]) / 50)
+    bD = round((colour1[2] - colour2[2]) / 50)
+    print(colour1)
+    print(colour2)
+    for i in range(50):
+        colour = (r,g,b)
+        print(colour)
+        leds.set_pixel(i,colour)
+        
+        r += rD
+        g += gD
+        b += bD
+
     leds.show()
 
-async def fill(colour):
+async def fillBlock(colour):
     colour = hexCol2RGBCol(colour)
-    leds.fill(colour)
+    for i in range(50):
+        leds.set_pixel(i,colour)
+
+    leds.show()
+
+async def fillPattern(colour):
+    colour = hexCol2RGBCol(colour)
+    for i in range(50):
+        newCol = (random.randint(0,colour[0]),random.randint(0,colour[1]),random.randint(0,colour[2]))
+        leds.set_pixel(i,newCol)
+    leds.show()
+
+async def fillPatternCol(colour):
+    colour = hexCol2RGBCol(colour)
+    for i in range(50):
+        ratio = random.randint(0,255) / 255
+        newCol = (round(colour[0]*ratio),round(colour[1]*ratio),round(colour[2]*ratio))
+        leds.set_pixel(i,newCol)
     leds.show()
 
 def showIP(ip):
@@ -37,7 +71,12 @@ def hexCol2RGBCol(hex):
 
 rp2.PIO(0).remove_program()
 
-methods = {"fill":(fill,["colour"]),
+global currPixels
+currPixels = [[0] * 50]
+
+methods = {"fillBlock":(fillBlock,["colour"]),
+            "fillPattern":(fillPattern,["colour"]),
+            "fillPatternCol":(fillPatternCol,["colour"]),
             "gradient":(gradient,["colour1","colour2"])}
 
 leds = Neopixel(50,0,0,"GRB")
@@ -71,8 +110,7 @@ else:
 
     server = WebServer(methods,port=8350)
     uasyncio.run(server.start())
-        
-#start up, show IP
+
 #multiple colours
     #variable for pattern number
     # max of 5
@@ -84,7 +122,5 @@ else:
     #variable to determine how wmany flash
         #1 - all flassh at same time
         #2 - every other flashes at same time
-        #3 = every 3rd one in sequence etc
-
-#gradient
+        #3 = every 3rd one in sequence etcgfh
     

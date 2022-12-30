@@ -1,8 +1,9 @@
 function fill(){
+    let type = document.querySelector('input[name="designStyle"]:checked').value;
     let colour = document.getElementById("colorpicker").value.substring(1)
 
     params = {"colour":colour}
-    result = formatURL("fill",params)
+    result = formatURL("fill" + type,params)
 
     return "Done"
 }

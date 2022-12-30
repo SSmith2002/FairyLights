@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html>
-    <head><title>Fairy Lightss</title></head>
+    <head><title>Fairy Lights</title></head>
     <body>
         <input type="color" id="colorpicker" value =#000000>
+        <form class="centerMe">
+            <input type="radio" id="block" name="designStyle" value="Block" checked=true>
+            <label for="block">Block</label><br>
+            <input type="radio" id="pattern" name="designStyle" value="Pattern">
+            <label for="pattern">Pattern</label><br>
+            <input type="radio" id="patternCol" name="designStyle" value="PatternCol">
+            <label for="patternCol">Pattern Keep Colour</label>
+        </form>
         <button onclick="fill()">Fill</button>
 
         <br>
-        
+
         <input type="color" id="gradient1" value =#000000>
         <input type="color" id="gradient2" value =#000000>
         <button onclick="gradient()">Gradient</button>
