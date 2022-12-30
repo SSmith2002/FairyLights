@@ -14,7 +14,7 @@ class WebServer:
         print('Web Server starting on port: %d...' % (self.port))
         
         servSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-
+        servSocket.setblocking(0)
         try:
             servSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -24,17 +24,21 @@ class WebServer:
 
             while True:
                 await uasyncio.sleep_ms(100)
-                connSocket,sourceAddr = servSocket.accept()
-                print(connSocket)
-                if(connSocket):
-                    print("%s connected" %(sourceAddr[0]))
-                    uasyncio.create_task(self.handleRequest(connSocket))
+                try:
+                    connSocket,sourceAddr = servSocket.accept()
+                    print(connSocket)
+                    if(connSocket):
+                        print("%s connected" %(sourceAddr[0]))
+                        uasyncio.create_task(self.handleRequest(connSocket))
+                except:
+                    pass
 
         except Exception as e:
             servSocket.close()
             print(e)
 
     async def handleRequest(self,client):
+        client.setblocking(1)
         message = client.recv(1024)
         request = message.decode()
         while(len(message) == 1024):
