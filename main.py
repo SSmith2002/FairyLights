@@ -5,6 +5,11 @@ from neopixel import Neopixel
 import uasyncio
 import rp2
 
+async def gradient(colour1,colour2):
+    colour1,colour2 = hexCol2RGBCol(colour1),hexCol2RGBCol(colour2)
+    leds.set_pixel_line_gradient(0,49,colour1,colour2)
+    leds.show()
+
 async def fill(colour):
     colour = hexCol2RGBCol(colour)
     leds.fill(colour)
@@ -32,7 +37,8 @@ def hexCol2RGBCol(hex):
 
 rp2.PIO(0).remove_program()
 
-methods = {"fill":(fill,["colour"])}
+methods = {"fill":(fill,["colour"]),
+            "gradient":(gradient,["colour1","colour2"])}
 
 leds = Neopixel(50,0,0,"GRB")
 leds.brightness(128)
@@ -68,3 +74,17 @@ else:
         
 #start up, show IP
 #multiple colours
+    #variable for pattern number
+    # max of 5
+    #pattern of 3 reveals 3 squares to colour
+    #this pattern is then repeated
+
+#flash all on then off
+    #dynamic speed
+    #variable to determine how wmany flash
+        #1 - all flassh at same time
+        #2 - every other flashes at same time
+        #3 = every 3rd one in sequence etc
+
+#gradient
+    
