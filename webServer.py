@@ -1,7 +1,7 @@
 import os
 import socket
 from time import *
-import _thread
+import uasyncio
 
 class WebServer:
     def __init__(self,methods,port=80,folder="",defaultPage="index.html"):
@@ -10,36 +10,36 @@ class WebServer:
         self.folder = folder
         self.home = defaultPage
 
-    def start(self):
+    async def start(self):
         print('Web Server starting on port: %d...' % (self.port))
-
+        
         servSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-
+        servSocket.setblocking(0)
         try:
-            servSocket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
+            servSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
             servSocket.bind(('0.0.0.0',self.port))
 
             servSocket.listen(1)
 
             while True:
+                await uasyncio.sleep_ms(10)
                 connSocket,sourceAddr = servSocket.accept()
+                print(connSocket)
                 if(connSocket):
                     print("%s connected" %(sourceAddr[0]))
-                    _thread.start_new_thread(self.handleRequest,(connSocket))
+                    uasyncio.create_task(self.handleRequest(connSocket))
 
         except Exception as e:
             servSocket.close()
             print(e)
 
-    def handleRequest(self,client):
+    async def handleRequest(self,client):
         message = client.recv(1024)
         request = message.decode()
         while(len(message) == 1024):
             message = client.recv(1024)
             request += message.decode()
-        
-        print(request)
     
         if(request):
             request = request.split('\n')[0]
@@ -74,7 +74,7 @@ class WebServer:
                     paramsDict = dict(param.split("=") for param in params)
 
                     if(set(self.methods[methodName][1]).issuperset((paramsDict.keys()))):
-                        result = str(self.methods[methodName][0](**paramsDict))
+                        result = str(await self.methods[methodName][0](**paramsDict))
                         servResponse = 'HTTP/1.0 200 OK\n\n' + result
                     else:
                         print("ERROR: Params are not suitable for requested method")

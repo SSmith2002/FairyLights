@@ -2,11 +2,16 @@ import network
 import time
 from webServer import WebServer
 from neopixel import Neopixel
+import uasyncio
+
+def fill(r,g,b):
+    colour = (g,r,b)
+    leds.fill(colour)
+    leds.show()
+
+rp2.PIO(0).remove_program()
 
 leds = Neopixel(50,0,0,"GRB")
-color = (255,255,0)
-leds.fill(color,50)
-leds.show()
 
 ssid = "TALKTALK0573C2_EXT"
 password = "CNNHYFAW"
@@ -30,7 +35,7 @@ else:
     status = wlan.ifconfig()
     print( 'ip = ' + status[0] )
 
-    # server = WebServer({},port=8350)
-    # server.start()
+    server = WebServer({},port=8350)
+    uasyncio.run(server.start())
         
         
