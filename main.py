@@ -124,7 +124,7 @@ async def updateSpeed(value):
     if(value == 0):
         animationSpeed = 0
     else:
-        animationSpeed = int((50 / value)*1000)
+        animationSpeed = int((20 / value)*1000)
 
 async def wait():
     global active
@@ -146,7 +146,7 @@ def hexCol2RGBCol(hex):
 
 rp2.PIO(0).remove_program()
 global animationSpeed
-animationSpeed = int((50 / 50)*1000)
+animationSpeed = int((20 / 50)*1000)
 
 global currPixels
 currPixels = [(0,0,0) for i in range(50)]
