@@ -1,18 +1,25 @@
 import network
 import time
+import utime
 from webServer import WebServer
 from neopixel import Neopixel
 import uasyncio
 import rp2
 import random
 
+def fill(colour):
+    for i in range(50):
+        leds.set_pixel(i,colour)
+        currPixels[i] = colour
+    leds.show()
+       
 async def gradient(colour1,colour2):
     global currPixels
     global active
 
     active += 1
     while(active > 1):
-        await uasyncio.sleep_ms(animationSpeed)
+        await uasyncio.sleep_ms(10)
 
     colour1,colour2 = hexCol2RGBCol(colour1),hexCol2RGBCol(colour2)
     r = colour1[0]
@@ -24,11 +31,12 @@ async def gradient(colour1,colour2):
 
     for i in range(50):
         colour = (r,g,b)
+        print(colour)
         leds.set_pixel(i,colour)
         
-        r += rD
-        g += gD
-        b += bD
+        r -= rD
+        g -= gD
+        b -= bD
 
         currPixels[i] = colour
     leds.show()
@@ -41,7 +49,7 @@ async def fillBlock(colour):
 
     active += 1
     while(active > 1):
-        await uasyncio.sleep_ms(animationSpeed)
+        await uasyncio.sleep_ms(10)
     
     colour = hexCol2RGBCol(colour)
     for i in range(50):
@@ -57,7 +65,7 @@ async def fillPattern(colour):
 
     active += 1
     while(active > 1):
-        await uasyncio.sleep_ms(animationSpeed)
+        await uasyncio.sleep_ms(10)
     
     colour = hexCol2RGBCol(colour)
 
@@ -67,7 +75,11 @@ async def fillPattern(colour):
             leds.set_pixel(i,newCol)
             currPixels[i] = newCol
         leds.show()
-        await uasyncio.sleep_ms(animationSpeed)
+
+        while animationSpeed == 0:
+            await uasyncio.sleep_ms(10)
+        else:
+            await wait()
 
     active -= 1
 
@@ -77,7 +89,7 @@ async def fillPatternCol(colour):
 
     active += 1
     while(active > 1):
-        await uasyncio.sleep_ms(animationSpeed)
+        await uasyncio.sleep_ms(10)
     
     colour = hexCol2RGBCol(colour)
 
@@ -88,22 +100,13 @@ async def fillPatternCol(colour):
             leds.set_pixel(i,newCol)
             currPixels[i] = newCol
         leds.show()
-        await uasyncio.sleep_ms(animationSpeed)
+
+        while animationSpeed == 0:
+            await uasyncio.sleep_ms(10)
+        else:
+            await wait()
 
     active -= 1
-
-def showIP(ip):
-    global currPixels
-    
-    ip = ip.split(".")
-    ip = int(ip[-1])
-
-    colour = (255,255,0)
-    for i in range(ip):
-        leds.set_pixel(i,colour)
-        currPixels[i] = colour
-        leds.show()
-        time.sleep(1)
 
 async def updateBrightness(value):
     global currPixels
@@ -121,7 +124,15 @@ async def updateSpeed(value):
     if(value == 0):
         animationSpeed = 0
     else:
-        animationSpeed = int((50 / value) *1000)
+        animationSpeed = int((50 / value)*1000)
+
+async def wait():
+    global active
+    global animationSpeed
+    end = utime.ticks_ms()
+
+    while ((utime.ticks_diff(utime.ticks_ms(),end)) < animationSpeed) and active == 1:
+        await uasyncio.sleep_ms(10)
 
 def hex2rgb(hex):
     hexDigits = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f']
@@ -135,7 +146,7 @@ def hexCol2RGBCol(hex):
 
 rp2.PIO(0).remove_program()
 global animationSpeed
-animationSpeed = int((50 / 50) * 1000)
+animationSpeed = int((50 / 50)*1000)
 
 global currPixels
 currPixels = [(0,0,0) for i in range(50)]
@@ -155,11 +166,12 @@ leds.brightness(128)
 leds.fill((0,0,0))
 leds.show()
 
-ssid = "TALKTALK0573C2_EXT"
-password = "CNNHYFAW"
+ssid = "BTB-N7CH6M"
+password = "3rnUpL3URrCepH"
 
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
+wlan.ifconfig(('192.168.1.11', '255.255.255.0','192.168.1.254', '8.8.8.8'))
 wlan.connect(ssid,password)
 
 max_wait = 10
@@ -171,27 +183,14 @@ while max_wait > 0:
     time.sleep(1)
 
 if wlan.status() != 3:
+    fill((255,0,0))
     raise RuntimeError('network connection failed')
 else:
     print('connected')
     status = wlan.ifconfig()
     print( 'ip = ' + status[0] )
 
-    showIP(status[0])
+    fill((0,255,0))
 
     server = WebServer(methods,port=8350)
     uasyncio.run(server.start())
-
-#multiple colours
-    #variable for pattern number
-    # max of 5
-    #pattern of 3 reveals 3 squares to colour
-    #this pattern is then repeated
-
-#flash all on then off
-    #dynamic speed
-    #variable to determine how wmany flash
-        #1 - all flassh at same time
-        #2 - every other flashes at same time
-        #3 = every 3rd one in sequence etcgfh
-    
